@@ -12722,9 +12722,7 @@ found:
 	} else if (are_all_pools(1, argv)) {
 		/* The first arg is a pool name */
 		if ((argc == 2 && strcmp(argv[1], "all-vdevs") == 0) ||
-		    (argc == 2 && strcmp(argv[1], "root") == 0) ||
-		    are_vdevs_in_pool(argc - 1, argv + 1, argv[0],
-		    &cb.cb_vdevs)) {
+		    (argc == 2 && strcmp(argv[1], "root") == 0)) {
 
 			if (strcmp(argv[1], "root") == 0)
 				vdev = strdup("root-0");
@@ -12733,6 +12731,13 @@ found:
 
 			/* ... and the rest are vdev names */
 			cb.cb_vdevs.cb_names = &vdev;
+			cb.cb_vdevs.cb_names_count = argc - 1;
+			cb.cb_type = ZFS_TYPE_VDEV;
+			argc = 1; /* One pool to process */
+
+		} else if (are_vdevs_in_pool(argc - 1, argv + 1, argv[0],
+		    &cb.cb_vdevs)) {
+			cb.cb_vdevs.cb_names = argv + 1;
 			cb.cb_vdevs.cb_names_count = argc - 1;
 			cb.cb_type = ZFS_TYPE_VDEV;
 			argc = 1; /* One pool to process */
